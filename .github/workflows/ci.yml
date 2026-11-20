@@ -1,0 +1,85 @@
+name: Payments CI and deployment
+
+# - Push to any branch other than main: verify, then deploy a preview at a
+#   stable URL named after the branch and comment it on the branch's open PR.
+# - Push to main (a merge) or a manual run on main: verify, then deploy to
+#   production.
+# - Pull requests from forks: verify only (forks never receive secrets).
+#   Pull requests from this repository are covered by their branch's push run.
+#
+# Pieces: verify.yml (tests and build), deploy.yml (Cloudflare),
+# .github/actions/setup (toolchain, dependency cache, install).
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  # A newer push supersedes an older run, except on main.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  verify:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository
+    uses: ./.github/workflows/verify.yml
+
+  preview:
+    needs: verify
+    # Dependabot runs do not receive Actions secrets.
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref != 'refs/heads/main' &&
+      github.actor != 'dependabot[bot]'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: preview
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  comment-preview:
+    name: Comment the preview URL
+    needs: preview
+    if: needs.preview.outputs.url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment on the branch's open pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ needs.preview.outputs.url }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          pr=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" \
+            --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr" ]; then
+            echo "No open pull request for $BRANCH."
+            exit 0
+          fi
+          printf '**Preview deployed** for `%s` at %s\n\n%s/payments\n' \
+            "$BRANCH" "${SHA:0:7}" "$URL" > comment.md
+          gh pr comment "$pr" --repo "$GITHUB_REPOSITORY" --body-file comment.md \
+            --edit-last --create-if-none
+
+  production:
+    needs: verify
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

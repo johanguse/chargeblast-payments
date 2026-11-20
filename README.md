@@ -98,7 +98,25 @@ The browser suite starts the production build on port 3128. It covers desktop an
 
 ## CI and Cloudflare deployment
 
-Pull requests and pushes to `main` trigger the [Payments workflow](.github/workflows/payments.yml). CI uses `bun install --frozen-lockfile` so each build uses the committed dependency versions and fails if installation would change `bun.lock`. When changing dependencies locally, use `bun install` and commit the updated lockfile with `package.json`. The workflow runs Biome, the type check and the Vitest suite, builds the Next.js app with OpenNext, and runs the browser suite against the bundled Worker in local `workerd`. The manual release runs these same checks before deploying that build.
+Every push and every pull request from a fork runs [CI](.github/workflows/ci.yml). It is split into small pieces:
+
+| File | Role |
+| --- | --- |
+| [ci.yml](.github/workflows/ci.yml) | Entry point: triggers, concurrency, and which jobs run for which branch |
+| [verify.yml](.github/workflows/verify.yml) | Reusable. Runs two jobs in parallel: Biome, the type check and Vitest in one; the OpenNext Worker build and the browser suite against it in local `workerd` in the other. Uploads the tested build as an artifact. |
+| [deploy.yml](.github/workflows/deploy.yml) | Reusable. Deploys that artifact to `preview` or `production` and reports the URL |
+| [actions/setup](.github/actions/setup/action.yml) | Shared steps: Node.js 24, Bun, the dependency cache, `bun install --frozen-lockfile` |
+| [preview-alias.sh](.github/scripts/preview-alias.sh) | Turns a branch name into a preview URL alias |
+
+Caches keep repeat runs fast:
+
+| Cache | Key | Effect |
+| --- | --- | --- |
+| Bun packages (`~/.bun/install/cache`) | `bun.lock` | Install skips downloads |
+| Next.js build (`.next/cache`) | `bun.lock` plus source files, falling back to the latest cache for the same lockfile | Incremental compilation |
+| Playwright Chromium (`~/.cache/ms-playwright`) | Playwright version | Skips the browser download. System libraries are still installed each run because they live outside the cache. |
+
+`--frozen-lockfile` makes CI fail if installation would change `bun.lock`. When changing dependencies locally, run `bun install` and commit the updated lockfile with `package.json`. Production can be deployed two ways, and both use the same build commands: automatically by GitHub Actions on every merge to `main`, or by hand from your machine with the Wrangler CLI. Both are described below.
 
 To preview the Worker locally, run the following from the project directory after `bun install`:
 
@@ -109,11 +127,28 @@ bun run preview:worker
 
 Open [the local Worker preview](http://localhost:8787/payments). To run the browser suite against that build on Linux or WSL, use `TEST_WORKER=1 bun run test:e2e` after installing Playwright Chromium.
 
-To publish a release:
+### Deploy with GitHub Actions
 
-1. Enable a `workers.dev` subdomain for the target Cloudflare account. The Worker name is `chargeblast-payments`. To rename it, update both `name` and the self-reference service in [wrangler.jsonc](wrangler.jsonc).
-2. In the GitHub repository, add the Actions secrets `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`. Scope the token to the target account with the **Edit Cloudflare Workers** template. [Cloudflare authentication guide](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
-3. Once the workflow is on the default branch, open **Actions → Payments CI and deployment → Run workflow**, select **main**, and run it. The final step prints the deployed Worker URL. Open `/payments` there.
+Both deploy paths ship the exact `.open-next` build that passed the tests, handed over as a workflow artifact.
+
+| Trigger | Jobs | Result |
+| --- | --- | --- |
+| Push to any branch other than `main` | `verify` → `preview` → `comment-preview` | Uploads a preview version without touching production, at `https://<branch>-chargeblast-payments.<subdomain>.workers.dev`. The branch name is lowercased, other characters become dashes, and it is cut to 40 characters, so `feature/New-Filters` becomes `feature-new-filters`. Each push updates the same URL. The URL is shown in the run summary and commented on the branch's open pull request, if there is one. |
+| Push to `main` (a merge), or **Run workflow** on `main` | `verify` → `production` | Deploys to `https://chargeblast-payments.<subdomain>.workers.dev`. |
+| Pull request from a fork | `verify` | Tests only. GitHub does not give secrets to fork pull requests. Pull requests from this repository are already tested by the push run for their branch. |
+
+Dependabot branches are tested but not previewed, because Dependabot runs do not receive Actions secrets.
+
+One-time setup:
+
+1. In Cloudflare, enable a `workers.dev` subdomain (**Workers & Pages → Settings**).
+2. Create an API token at **My Profile → API Tokens → Create Token** using the **Edit Cloudflare Workers** template, limited to your account. Copy your **Account ID** from the dashboard's account home page.
+3. In GitHub, open **Settings → Secrets and variables → Actions** and add two repository secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. Deploy production once, by merging to `main`, using **Run workflow**, or running `bun run deploy:worker` locally. Previews add versions to an existing Worker, so branch previews only work after that first deploy.
+
+The jobs use the GitHub environments `preview` and `production`, which GitHub creates on first use and shows with their URLs on the repository page. To require an approval before production deploys, open **Settings → Environments → production** and add required reviewers. You can also move the two secrets into that environment to scope them there.
+
+Preview versions run the branch's code with the production Worker's bindings. That is fine for this app, which has no data. [wrangler.jsonc](wrangler.jsonc) turns on `preview_urls`, which Wrangler disables by default, and Workers Logs (`observability`). The Worker name is `chargeblast-payments`. To rename it, update both `name` and the self-reference service in that file.
 
 ### Deploy from the command line
 
@@ -138,7 +173,7 @@ bunx wrangler rollback           # return to the previous version
 bunx wrangler tail               # stream live logs
 ```
 
-On a machine without a browser, skip `wrangler login` and export `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, the same values CI uses.
+On a machine without a browser, skip `wrangler login` and export `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, the same values CI uses. A CLI deploy and a CI deploy update the same Worker. Whichever ran last is live, so a manual deploy is replaced by the next merge to `main`.
 
 The app serves seeded data and static assets. The [OpenNext configuration](open-next.config.ts) requires no database or R2 bucket. Every route renders on demand, so no incremental cache is configured. The bundled Worker is about 940 KiB gzipped, within the 3 MiB limit of the Workers free plan. [OpenNext setup guide](https://opennext.js.org/cloudflare/get-started)
 
