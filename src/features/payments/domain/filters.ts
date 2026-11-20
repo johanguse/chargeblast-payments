@@ -31,6 +31,28 @@ export function clearFilterGroup(group: FilterGroup, params: URLSearchParams) {
   for (const key of group.keys) params.delete(key);
 }
 
+function customDateSummary(from: string | null, to: string | null) {
+  const crossesYears = from && to && from.slice(0, 4) !== to.slice(0, 4);
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: crossesYears ? "numeric" : undefined,
+    timeZone: "UTC",
+  });
+  function display(value: string) {
+    // These are calendar dates, so preserve the selected day in every time zone.
+    const stamp = Date.parse(`${value}T00:00:00Z`);
+    return Number.isFinite(stamp) ? formatter.format(stamp) : value;
+  }
+  if (from && to) {
+    if (from === to) return display(from);
+    return `${display(from)} – ${display(to)}`;
+  }
+  if (from) return `is on or after ${display(from)}`;
+  if (to) return `is on or before ${display(to)}`;
+  return "is a custom range";
+}
+
 export function summarizeFilter(group: FilterGroup, p: URLSearchParams) {
   if (group.label === "Amount") {
     const min = p.get("min");
@@ -50,12 +72,7 @@ export function summarizeFilter(group: FilterGroup, p: URLSearchParams) {
     if (range === "7 days" || range === "30 days")
       return `is in the last ${range}`;
     if (range !== "Custom") return "";
-    const from = p.get("from");
-    const to = p.get("to");
-    if (from && to) return `is from ${from} to ${to}`;
-    if (from) return `is on or after ${from}`;
-    if (to) return `is on or before ${to}`;
-    return "is a custom range";
+    return customDateSummary(p.get("from"), p.get("to"));
   }
   if (group.label === "More filters") {
     const query = p.get("q")?.trim();

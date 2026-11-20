@@ -32,7 +32,7 @@ describe("summarizeFilter", () => {
         date,
         params("range=Custom&from=2026-01-01&to=2026-01-31"),
       ),
-    ).toBe("is from 2026-01-01 to 2026-01-31");
+    ).toBe("Jan 1 – Jan 31");
     expect(summarizeFilter(date, params("range=Custom"))).toBe(
       "is a custom range",
     );
@@ -45,14 +45,12 @@ describe("summarizeFilter", () => {
     ["Date and time", "range=Today", "is today"],
     [
       "Date and time",
-      "range=Custom&to=2026-01-31",
-      "is on or before 2026-01-31",
+      "range=Custom&from=2026-12-30&to=2027-01-02",
+      "Dec 30, 2026 – Jan 2, 2027",
     ],
-    [
-      "Date and time",
-      "range=Custom&from=2026-01-01",
-      "is on or after 2026-01-01",
-    ],
+    ["Date and time", "range=Custom&from=2026-11-20&to=2026-11-20", "Nov 20"],
+    ["Date and time", "range=Custom&to=2026-01-31", "is on or before Jan 31"],
+    ["Date and time", "range=Custom&from=2026-01-01", "is on or after Jan 1"],
     ["Payment method", "method=Card&method=Wallet", "is Card or Wallet"],
     ["Currency", "currency=USD", "is USD"],
     ["More filters", "q=4242", "matching “4242”"],
