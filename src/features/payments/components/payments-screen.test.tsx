@@ -18,9 +18,10 @@ describe("PaymentsScreen", () => {
   it("shows the first page of payments", async () => {
     await renderScreen();
     expect(dataRows()).toHaveLength(25);
-    expect(
-      screen.getByRole("button", { name: "Rows per page: 25" }),
-    ).toHaveTextContent("1–25");
+    expect(screen.getByRole("combobox", { name: "Rows per page" })).toHaveValue(
+      "25",
+    );
+    expect(screen.getByText(/Viewing 1–25/)).toBeVisible();
   });
 
   it("filters with the status tabs and reflects it in the URL", async () => {

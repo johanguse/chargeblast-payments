@@ -6,13 +6,14 @@ Rebuild Transactions → Payments in Next.js and TypeScript. The selected list l
 
 | Area | Observable result |
 | --- | --- |
-| Rows | Show a full payment ID, customer, amount with currency, status, method with identifying details, and creation date and time. Copy puts the full ID on the clipboard and confirms success. Hovering or focusing the timestamp reveals relative time. |
+| Rows | Show a shortened payment ID (hover or focus to reveal the full value), customer, amount with currency, status, method with identifying details, and creation date and time. Copy puts the full ID on the clipboard and confirms success. Hovering or focusing the timestamp reveals relative time. |
 | Data | Generate 600 synthetic payments from a repeatable seed with stable IDs, several currencies, recognizable brands, last four digits, and all four required statuses. Anchor demo dates to the current day so presets have results. Format amounts using currency-specific minor units. |
 | Sort | Default to newest first. Activating Created, Amount, or Status toggles direction and exposes the direction to assistive technology. Sort the entire filtered result before pagination. Compare nominal major-unit amounts across currencies and use ID to break ties. |
 | Date | Today means local midnight through today. Last 7 and 30 days include today. Custom includes both selected calendar dates. Reject an end before the start. |
 | Status and method | Support Succeeded, Pending, Failed, and Refunded and Card, ACH, and Wallet. Selections within a group match any selected value. Combine groups with AND. Clearing a group removes its restriction. |
 | Amount and search | Minimum and maximum are inclusive and independently optional. Reject reversed bounds. Trim text and match partial payment ID, customer email, or last four digits. |
 | Pagination | Offer 25, 50, and 100 rows, initially 25. Reset to page one after filters or page size change. Show the result range, disable unavailable navigation, and offer a clear action for empty results. |
+| CSV export | Export all filtered payments across pages, in the same sort order and with the same visible columns as the table. Include the complete ID when its column is visible. |
 
 ## Implementation order
 

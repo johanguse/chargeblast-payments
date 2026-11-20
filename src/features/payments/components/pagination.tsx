@@ -1,5 +1,3 @@
-import { Check } from "lucide-react";
-import { Popover } from "@/components/ui/popover";
 import { pageSizes } from "../domain/query";
 
 export function Pagination({
@@ -32,36 +30,23 @@ export function Pagination({
         Viewing{" "}
         {total ? (
           <>
-            <Popover
-              label={`Rows per page: ${size}`}
-              trigger={`${start + 1}–${end}`}
-            >
-              {(close) => (
-                <>
-                  <h2>Rows per page</h2>
-                  {pageSizes.map((n) => (
-                    <button
-                      type="button"
-                      className="size-option"
-                      key={n}
-                      aria-pressed={n === size}
-                      onClick={() => {
-                        onSizeChange(n);
-                        close();
-                      }}
-                    >
-                      {n} rows {n === size && <Check size={14} />}
-                    </button>
-                  ))}
-                </>
-              )}
-            </Popover>{" "}
-            of <strong>{total}</strong> results
+            {start + 1}–{end} of <strong>{total}</strong> results
           </>
         ) : (
           "0 results"
         )}
       </div>
+      <select
+        aria-label="Rows per page"
+        value={size}
+        onChange={(event) => onSizeChange(Number(event.currentTarget.value))}
+      >
+        {pageSizes.map((n) => (
+          <option key={n} value={n}>
+            {n}
+          </option>
+        ))}
+      </select>
       <nav aria-label="Pagination">
         <button
           type="button"

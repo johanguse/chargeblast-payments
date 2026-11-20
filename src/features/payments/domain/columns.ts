@@ -44,7 +44,7 @@ export const defaultWidths: Record<Column, number> = {
   Date: 140,
   "Refunded date": 140,
   "Decline reason": 160,
-  "Payment ID": 260,
+  "Payment ID": 180,
   Wallet: 110,
   "Customer name": 160,
   Agent: 130,
@@ -63,7 +63,7 @@ export const defaultWidths: Record<Column, number> = {
 export const MAX_COLUMN_WIDTH = 480;
 
 export const minColumnWidth = (column: Column) =>
-  column === "Payment ID" ? 260 : 75;
+  column === "Payment ID" ? 160 : 75;
 
 export const clampColumnWidth = (column: Column, width: number) =>
   Math.min(MAX_COLUMN_WIDTH, Math.max(minColumnWidth(column), width));

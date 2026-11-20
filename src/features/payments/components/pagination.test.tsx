@@ -17,9 +17,10 @@ const props = {
 describe("Pagination", () => {
   it("shows the visible range and total", () => {
     render(<Pagination {...props} />);
-    expect(
-      screen.getByRole("button", { name: "Rows per page: 25" }),
-    ).toHaveTextContent("26–50");
+    expect(screen.getByRole("combobox", { name: "Rows per page" })).toHaveValue(
+      "25",
+    );
+    expect(screen.getByText(/Viewing 26–50/)).toBeVisible();
     expect(screen.getByText("60")).toBeInTheDocument();
   });
 
@@ -40,6 +41,8 @@ describe("Pagination", () => {
   it("reads 0 results when empty", () => {
     render(<Pagination {...props} total={0} />);
     expect(screen.getByText(/0 results/)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Rows per page/ })).toBeNull();
+    expect(
+      screen.getByRole("combobox", { name: "Rows per page" }),
+    ).toBeVisible();
   });
 });

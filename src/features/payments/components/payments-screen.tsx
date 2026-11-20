@@ -53,7 +53,7 @@ export function PaymentsScreen({
 
   function exportRows() {
     downloadFile(
-      paymentsToCsv(result),
+      paymentsToCsv(result, layout.visibleColumns),
       "payments.csv",
       "text/csv;charset=utf-8",
     );

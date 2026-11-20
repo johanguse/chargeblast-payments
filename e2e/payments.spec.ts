@@ -29,10 +29,11 @@ test("payment workflow and accessible controls", async ({ page, context }) => {
   expect((await scan()).violations.map((v) => v.id)).toEqual([]);
   await page.getByLabel("Next page").click();
   await expect(
-    page.getByRole("button", { name: "Rows per page: 25" }),
+    page.getByRole("combobox", { name: "Rows per page" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Rows per page: 25" }).click();
-  await page.getByRole("button", { name: "100 rows" }).click();
+  await page
+    .getByRole("combobox", { name: "Rows per page" })
+    .selectOption("100");
   await expect(page.locator("tbody tr[data-selectable]")).toHaveCount(100);
   await page
     .getByRole("button", { name: "Filter by status", exact: true })
@@ -213,7 +214,9 @@ test("amount popover applies a range and Back discards edits", async ({
   await expect(page).toHaveURL(/max=21.98/);
 });
 
-test("rounded bounds, full IDs and configurable columns", async ({ page }) => {
+test("rounded bounds, shortened IDs and configurable columns", async ({
+  page,
+}) => {
   await page.goto("/payments");
   const idButton = page
     .getByRole("button", { name: /Copy payment ID/ })
@@ -222,7 +225,16 @@ test("rounded bounds, full IDs and configurable columns", async ({ page }) => {
     "Copy payment ID ",
     "",
   );
-  await expect(idButton).toHaveText(fullId);
+  await expect(idButton).toHaveText(
+    `${fullId.slice(0, 8)}…${fullId.slice(-6)}`,
+  );
+  await idButton.hover();
+  await expect(page.getByRole("tooltip")).toHaveText(fullId);
+  await page.keyboard.press("Escape");
+  await page.mouse.move(0, 0);
+  await idButton.focus();
+  await expect(page.getByRole("tooltip")).toHaveText(fullId);
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Edit columns" }).click();
   const settings = page.getByRole("dialog");
   await settings.getByLabel("Description", { exact: true }).uncheck();
@@ -292,8 +304,9 @@ test("committed filters and pagination refresh only the payment rows", async ({
   await expect(skeleton).toBeVisible();
   await expect(rows.first()).toContainText(firstId!);
 
-  await page.getByRole("button", { name: "Rows per page: 25" }).click();
-  await page.getByRole("button", { name: "50 rows" }).click();
+  await page
+    .getByRole("combobox", { name: "Rows per page" })
+    .selectOption("50");
   await expect(skeleton.locator("tr")).toHaveCount(50);
   await expect(rows).toHaveCount(50);
 });
