@@ -178,3 +178,7 @@ On a machine without a browser, skip `wrangler login` and export `CLOUDFLARE_API
 The app serves seeded data and static assets. The [OpenNext configuration](open-next.config.ts) requires no database or R2 bucket. Every route renders on demand, so no incremental cache is configured. The bundled Worker is about 940 KiB gzipped, within the 3 MiB limit of the Workers free plan. [OpenNext setup guide](https://opennext.js.org/cloudflare/get-started)
 
 Known issue: when a browser leaves a page while it is still streaming, the local Worker can log `TypeError: Unable to enqueue` from OpenNext's response stream. The user has already navigated away and sees nothing. The browser suite triggers it by moving between pages quickly.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).

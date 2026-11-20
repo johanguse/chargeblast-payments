@@ -30,7 +30,6 @@ describe("FilterEditor", () => {
     expect(screen.getByLabelText("Failed")).toBeChecked();
     await user.click(screen.getByLabelText("Pending"));
     await user.click(screen.getByRole("button", { name: "Apply" }));
-    // Values follow the checkbox order, which follows `statuses`.
     expect(saved(onSave)).toBe("status=Pending&status=Failed");
   });
 

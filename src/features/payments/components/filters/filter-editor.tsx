@@ -35,7 +35,6 @@ export function FilterEditor({
     <form
       onChange={(e) => {
         const form = e.currentTarget;
-        // Range and operator selects change which inputs are mounted.
         requestAnimationFrame(() => {
           if (form.isConnected) onPreview(new FormData(form));
         });

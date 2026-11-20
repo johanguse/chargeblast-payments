@@ -5,7 +5,6 @@ test("slash focuses search and Escape closes popovers", async ({ page }) => {
   await page.goto("/payments");
   await waitForRows(page);
   const search = page.getByLabel(/Search by payment ID/);
-  // The shortcut listener is attached on hydration; retry until it is live.
   await expect(async () => {
     await page.keyboard.press("/");
     await expect(search).toBeFocused({ timeout: 250 });

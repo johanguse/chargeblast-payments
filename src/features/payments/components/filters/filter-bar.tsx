@@ -18,7 +18,6 @@ export function FilterBar({
   params: URLSearchParams;
   update: UpdateParams;
 }) {
-  // Live summary of the pill being edited, before it is applied.
   const [draft, setDraft] = useState<{ label: string; value: string } | null>(
     null,
   );

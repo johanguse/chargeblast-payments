@@ -49,7 +49,6 @@ export function PaymentRow({
               formatter={formatDate}
             />
           ) : (
-            // The whole row links to the payment; only Amount is a tab stop.
             <Link
               className={`cell-link ${c === "Amount" ? "amount" : ""}`}
               href={href}

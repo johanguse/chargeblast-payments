@@ -10,7 +10,6 @@ const dataRows = () => within(table()).queryAllByRole("row").slice(1);
 async function renderScreen(url = "/payments") {
   history.replaceState(null, "", url);
   render(<PaymentsScreen now={NOW} data={payments} />);
-  // The URL is read in an effect; wait until the screen reflects it.
   await screen.findByText(/results/);
   return userEvent.setup();
 }
