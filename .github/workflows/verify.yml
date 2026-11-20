@@ -1,0 +1,87 @@
+name: Verify
+
+# Reusable workflow: static checks and the browser suite run in parallel.
+# The tested Worker build is uploaded as the `worker-build` artifact for the
+# deploy jobs of the same run.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  checks:
+    name: Lint, types and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test
+
+  e2e:
+    name: Build Worker and run browser tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - name: Restore the Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          # Exact hit when nothing changed; otherwise reuse the latest cache
+          # for the same dependencies.
+          key: next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**', 'public/**', 'next.config.ts', 'tsconfig.json') }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+      - run: bun run build:worker
+
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('./node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Restore Playwright browsers
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Chromium and its system dependencies
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+      - name: Install Chromium's system dependencies
+        # System packages live outside the cache, so they are installed every run.
+        if: steps.browsers.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Test the built Worker in local workerd
+        run: bun run test:e2e
+        env:
+          TEST_WORKER: "1"
+      - name: Keep the Playwright report when the browser suite fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+      - name: Hand the tested build to the deploy jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-build
+          path: .open-next/
+          include-hidden-files: true
+          retention-days: 1

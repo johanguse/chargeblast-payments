@@ -1,0 +1,83 @@
+name: Deploy
+
+# Reusable workflow: ships the `worker-build` artifact from Verify.
+# - production: `wrangler deploy` (through OpenNext) to the live Worker.
+# - preview: `wrangler versions upload` with an alias named after the branch,
+#   leaving production untouched.
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "`preview` or `production`."
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+    outputs:
+      url:
+        description: The deployed URL.
+        value: ${{ jobs.deploy.outputs.url }}
+
+permissions:
+  contents: read
+
+env:
+  WORKER_NAME: chargeblast-payments
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      # One deploy per target at a time. A newer preview replaces an older
+      # one; production deploys queue and are never cut off.
+      group: deploy-${{ inputs.environment }}-${{ inputs.environment == 'production' && 'main' || github.ref }}
+      cancel-in-progress: ${{ inputs.environment == 'preview' }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: worker-build
+          path: .open-next/
+
+      - name: Derive the preview alias from the branch name
+        id: alias
+        if: inputs.environment == 'preview'
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: echo "alias=$(bash .github/scripts/preview-alias.sh "$BRANCH")" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          ALIAS: ${{ steps.alias.outputs.alias }}
+        run: |
+          set -o pipefail
+          if [ "$ENVIRONMENT" = production ]; then
+            bun run deploy:worker 2>&1 | tee deploy.log
+            url=$(grep -oE "https://${WORKER_NAME}\.[a-z0-9.-]+\.workers\.dev" deploy.log | head -1 || true)
+          else
+            bun run upload:worker -- --preview-alias "$ALIAS" 2>&1 | tee deploy.log
+            # Prefer the stable alias URL; fall back to the per-version URL.
+            url=$(grep -oE "https://${ALIAS}-${WORKER_NAME}\.[a-z0-9.-]+\.workers\.dev" deploy.log | head -1 || true)
+            url=${url:-$(grep -oE "https://[a-z0-9-]+-${WORKER_NAME}\.[a-z0-9.-]+\.workers\.dev" deploy.log | head -1 || true)}
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          printf '### Deployed to %s\n\n%s/payments\n' "$ENVIRONMENT" "${url:-URL not found in Wrangler output}" >> "$GITHUB_STEP_SUMMARY"
