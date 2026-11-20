@@ -453,15 +453,36 @@ input[type="checkbox"]:checked:after {
     0 2px 5px #30313d14;
 }
 .id {
-  inline-size: 100%;
-  justify-content: space-between;
-  text-align: start;
-  background: var(--soft);
-  font: 12px monospace;
-  gap: 6px;
+  max-inline-size: 100%;
+  padding: 2px 5px;
+  gap: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: 12px / 18px monospace;
 }
 .id > svg {
   flex: none;
+  width: 12px;
+  height: 12px;
+}
+@media (hover: hover) {
+  .id > svg {
+    opacity: 0;
+  }
+  tbody tr:is(:hover, :focus-within) .id > svg {
+    opacity: 1;
+  }
+  tbody tr:hover .id {
+    border-color: var(--ring);
+  }
+}
+tbody tr:focus-within .id {
+  border-color: var(--ring);
+}
+.id:is(:hover, :focus-visible) {
+  background: white;
+  color: var(--ink);
 }
 .pagination {
   gap: 12px;

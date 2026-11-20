@@ -45,7 +45,6 @@ export function paymentsToCsv(
   columns: readonly Column[] = defaultColumns,
   timeZone?: string,
 ) {
-  // By default Intl uses the exporting browser's time zone, like the table.
   const dates = new Intl.DateTimeFormat("en-US", {
     timeZone,
     month: "short",
@@ -62,6 +61,5 @@ export function paymentsToCsv(
   const csv = [columns, ...records]
     .map((row) => row.map(quote).join(","))
     .join("\r\n");
-  // Excel uses the leading byte-order mark to detect UTF-8 on open.
   return `\uFEFF${csv}`;
 }
