@@ -40,7 +40,6 @@ function customDateSummary(from: string | null, to: string | null) {
     timeZone: "UTC",
   });
   function display(value: string) {
-    // These are calendar dates, so preserve the selected day in every time zone.
     const stamp = Date.parse(`${value}T00:00:00Z`);
     return Number.isFinite(stamp) ? formatter.format(stamp) : value;
   }
