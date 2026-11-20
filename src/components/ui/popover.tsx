@@ -9,6 +9,7 @@ import {
 export function Popover({
   label,
   trigger,
+  description,
   align = "start",
   triggerClassName,
   panelClassName,
@@ -17,6 +18,7 @@ export function Popover({
 }: {
   label: string;
   trigger: ReactNode;
+  description?: string;
   align?: "start" | "end";
   triggerClassName?: string;
   panelClassName?: string;
@@ -84,6 +86,7 @@ export function Popover({
         ref={button}
         popoverTarget={id}
         aria-label={label}
+        aria-description={description}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
@@ -95,6 +98,7 @@ export function Popover({
         role="dialog"
         aria-label={label}
         popover="auto"
+        style={{ visibility: open ? undefined : "hidden" }}
         className={["anchored", panelClassName].filter(Boolean).join(" ")}
         onToggle={(e) => {
           setOpen(e.newState === "open");

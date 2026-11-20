@@ -83,7 +83,6 @@ export function readSort(params: URLSearchParams) {
   };
 }
 
-/** Clicking the active column flips direction; a new column starts ascending. */
 export function toggleSort(params: URLSearchParams, column: Column) {
   const { column: current, ascending } = readSort(params);
   params.set("dir", current === column && ascending ? "desc" : "asc");

@@ -70,3 +70,33 @@ test("details fall back to UTC and ignore off-site back links", async ({
   ).toBeVisible();
   await expect(breadcrumb(page)).toHaveAttribute("href", "/payments");
 });
+
+test("transaction links scroll horizontally and select a shareable view", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/payments");
+  await waitForRows(page);
+  const nav = page.getByRole("navigation", { name: "Transaction types" });
+  await expect(nav.getByRole("link")).toHaveCount(6);
+  expect(
+    await nav.evaluate(
+      (el) =>
+        el.scrollHeight === el.clientHeight && el.scrollWidth > el.clientWidth,
+    ),
+  ).toBe(true);
+  const payouts = nav.getByRole("link", { name: "Payouts" });
+  await payouts.hover();
+  await expect(payouts).toHaveCSS("background-color", "rgb(244, 247, 250)");
+  await payouts.press("Enter");
+  await expect(payouts).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("heading", { name: "No payouts in this sandbox" }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(payouts).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "All activity" }).click();
+  await waitForRows(page);
+  await nav.getByRole("link", { name: "Payments", exact: true }).click();
+  await expect(page).toHaveURL(/\/payments$/);
+});

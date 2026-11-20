@@ -1,21 +1,14 @@
-import {
-  Check,
-  CircleMinus,
-  Clock,
-  type LucideIcon,
-  Undo2,
-  X,
-} from "lucide-react";
+import { Check, CircleAlert, CircleMinus, Clock, Undo2, X } from "lucide-react";
 import type { PaymentStatus } from "../../../domain/payment";
 
-const statusIcons: Record<PaymentStatus, LucideIcon> = {
+const statusIcons: Record<PaymentStatus, typeof Check> = {
   Succeeded: Check,
   Failed: X,
   Canceled: X,
   Refunded: Undo2,
   Pending: Clock,
   Uncaptured: Clock,
-  Disputed: CircleMinus,
+  Disputed: CircleAlert,
   Blocked: CircleMinus,
 };
 
@@ -30,7 +23,9 @@ export function StatusBadge({
   return (
     <span className={`badge ${status}`}>
       {status}
-      {withIcon && <Icon size={12} aria-hidden="true" />}
+      {withIcon && (
+        <Icon width={14} height={14} strokeWidth={2.3} aria-hidden="true" />
+      )}
     </span>
   );
 }

@@ -7,7 +7,6 @@ const quickActions = [
   { label: "Send receipt", Icon: Mail },
 ] as const;
 
-/** Hover shortcuts plus the "More actions" menu at the end of each row. */
 export function RowActions({
   id,
   href,
@@ -31,12 +30,12 @@ export function RowActions({
             aria-disabled="true"
             title={`${label} (unavailable in sandbox)`}
           >
-            <Icon size={14} />
+            <Icon width={14} height={14} />
           </button>
         ))}
       <Popover
         label={`More actions for ${id}`}
-        trigger={<Ellipsis size={16} />}
+        trigger={<Ellipsis width={16} height={16} />}
       >
         {(close) => (
           <div className="action-list">

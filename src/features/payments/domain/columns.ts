@@ -62,14 +62,12 @@ export const defaultWidths: Record<Column, number> = {
 
 export const MAX_COLUMN_WIDTH = 480;
 
-/** Payment IDs never truncate, so their column has a wider floor. */
 export const minColumnWidth = (column: Column) =>
   column === "Payment ID" ? 260 : 75;
 
 export const clampColumnWidth = (column: Column, width: number) =>
   Math.min(MAX_COLUMN_WIDTH, Math.max(minColumnWidth(column), width));
 
-/** Moves `column` into the slot currently held by `target`. */
 export function moveColumn(order: Column[], column: Column, target: Column) {
   if (column === target) return order;
   const next = order.filter((c) => c !== column);
@@ -77,6 +75,5 @@ export function moveColumn(order: Column[], column: Column, target: Column) {
   return next;
 }
 
-/** Fixed widths of the checkbox and row-actions columns. */
 export const SELECT_COLUMN_WIDTH = 26;
 export const ACTIONS_COLUMN_WIDTH = 40;

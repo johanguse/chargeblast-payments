@@ -1,20 +1,26 @@
 import * as Tooltip from "@radix-ui/react-tooltip";
-import {
-  Bell,
-  LayoutGrid,
-  MessageCircleQuestionMark,
-  Plus,
-  Search,
-  Settings,
-} from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { useRef } from "react";
+import {
+  AppLogoArrow,
+  AppLogoGeo,
+  AppLogoLd,
+  AppsAddIcon,
+  CreateIcon,
+  HelpIcon,
+} from "@/components/icons/top-bar-icons";
+import { GearIcon } from "@/components/icons/ui-icons";
 import { useSearchShortcut } from "../hooks/use-search-shortcut";
 
 const tools = [
-  { label: "Help", Icon: MessageCircleQuestionMark, className: "desktop-tool" },
+  { label: "Help", Icon: HelpIcon, className: "desktop-tool" },
   { label: "Notifications", Icon: Bell, className: "notifications-tool" },
-  { label: "Settings", Icon: Settings, className: "desktop-tool" },
-  { label: "Create", Icon: Plus, className: "create-tool" },
+  {
+    label: "Settings",
+    Icon: GearIcon,
+    className: "desktop-tool settings-tool",
+  },
+  { label: "Create", Icon: CreateIcon, className: "create-tool" },
 ];
 
 export function TopBar({
@@ -29,7 +35,7 @@ export function TopBar({
   return (
     <header>
       <label className="search">
-        <Search size={15} />
+        <Search width={13} height={13} aria-hidden="true" />
         <input
           ref={input}
           aria-label="Search by payment ID, email or last four digits"
@@ -43,10 +49,10 @@ export function TopBar({
           Test mode has moved. <u>Show me</u>
         </div>
         <div className="pinned-apps" aria-hidden="true">
-          <span className="app-mark app-mark-loop" />
-          <span className="app-mark app-mark-orbit" />
-          <span className="app-mark app-mark-arrow" />
-          <LayoutGrid size={16} />
+          <AppLogoLd />
+          <AppLogoGeo />
+          <AppLogoArrow />
+          <AppsAddIcon />
         </div>
         <div className="header-actions">
           <Tooltip.Provider delayDuration={300}>

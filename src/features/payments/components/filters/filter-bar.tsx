@@ -1,5 +1,6 @@
-import { CirclePlus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
+import { AddCircleIcon } from "@/components/icons/ui-icons";
 import { Popover } from "@/components/ui/popover";
 import {
   clearFilterGroup,
@@ -10,7 +11,6 @@ import {
 import type { UpdateParams } from "../../hooks/use-payments-query";
 import { FilterEditor } from "./filter-editor";
 
-/** One pill per filter group; each opens an editor in a popover. */
 export function FilterBar({
   params,
   update,
@@ -40,13 +40,14 @@ export function FilterBar({
             )}
             <Popover
               label={`Filter by ${g.label.toLowerCase()}`}
+              description={display || undefined}
               onDismiss={() =>
                 setDraft((old) => (old?.label === g.label ? null : old))
               }
               trigger={
                 <>
-                  {!display && <CirclePlus size={13} />} {g.label}{" "}
-                  {display && <b>{display}</b>}
+                  {!display && <AddCircleIcon width={16} height={16} />}{" "}
+                  {g.label} {display && <b>{display}</b>}
                 </>
               }
             >

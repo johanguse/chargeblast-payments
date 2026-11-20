@@ -1,6 +1,7 @@
 "use client";
-import { Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
+import { ExportIcon } from "@/components/icons/ui-icons";
 import { downloadFile } from "@/lib/download";
 import { paymentsToCsv } from "../domain/csv";
 import type { Payment } from "../domain/payment";
@@ -18,7 +19,7 @@ import { AnalyzeDialog } from "./analyze-dialog";
 import { AnnouncementBanner } from "./announcement-banner";
 import { ColumnSettings } from "./column-settings";
 import { FilterBar } from "./filters/filter-bar";
-import { PageHeading } from "./page-heading";
+import { PageHeading, type TransactionTab } from "./page-heading";
 import { Pagination } from "./pagination";
 import { StatusTabs } from "./status-tabs";
 import { PaymentsTable } from "./table/payments-table";
@@ -28,10 +29,12 @@ export function PaymentsScreen({
   now,
   data,
   loading = false,
+  activeTab = "Payments",
 }: {
   now: number;
   data: Payment[];
   loading?: boolean;
+  activeTab?: TransactionTab;
 }) {
   const { params, update, refreshing } = usePaymentsQuery();
   const layout = useColumnLayout();
@@ -44,6 +47,7 @@ export function PaymentsScreen({
     () => queryPayments(data, params, now),
     [data, params, now],
   );
+  const showPayments = activeTab === "Payments" || activeTab === "All activity";
   const page = paginate(result, params);
   const reset = () => update(clearFilters);
 
@@ -76,76 +80,91 @@ export function PaymentsScreen({
             update((p) => (value ? p.set("q", value) : p.delete("q")))
           }
         />
-        <PageHeading onAnalyze={() => setAnalyzeOpen(true)} />
-        <AnnouncementBanner
-          onDismiss={() => statusTabs.current?.querySelector("button")?.focus()}
+        <PageHeading
+          activeTab={activeTab}
+          onAnalyze={() => setAnalyzeOpen(true)}
         />
-        <StatusTabs
-          ref={statusTabs}
-          selected={params.getAll("status")}
-          onSelect={(status) =>
-            update((p) => {
-              p.delete("status");
-              if (status !== "All") p.append("status", status);
-            })
-          }
-        />
-        <div className="filter-actions">
-          <FilterBar params={params} update={update} />
-          <div className="list-actions">
-            <button
-              type="button"
-              className="outline"
-              onClick={exportRows}
-              aria-label="Export current view as CSV"
-            >
-              <Upload /> Export
-            </button>
-            <ColumnSettings layout={layout} />
-          </div>
-        </div>
-        {hasActiveFilters(params) && (
-          <button type="button" className="reset" onClick={reset}>
-            Clear filters <X size={12} />
-          </button>
-        )}
-        <PaymentsTable
-          loading={tableLoading}
-          pageSize={page.size}
-          rows={page.rows}
-          columns={layout.visibleColumns}
-          widths={layout.widths}
-          wrap={layout.wrap}
-          params={params}
-          now={now}
-          onSort={(column) => update((p) => toggleSort(p, column))}
-          onResize={layout.resize}
-          onMove={layout.move}
-          announce={setNotice}
-        />
-        {!tableLoading && !result.length && (
+        {showPayments ? (
+          <>
+            <AnnouncementBanner
+              onDismiss={() =>
+                statusTabs.current?.querySelector("button")?.focus()
+              }
+            />
+            <StatusTabs
+              ref={statusTabs}
+              selected={params.getAll("status")}
+              onSelect={(status) =>
+                update((p) => {
+                  p.delete("status");
+                  if (status !== "All") p.append("status", status);
+                })
+              }
+            />
+            <div className="filter-actions">
+              <FilterBar params={params} update={update} />
+              <div className="list-actions">
+                <button
+                  type="button"
+                  className="outline"
+                  onClick={exportRows}
+                  aria-label="Export current view as CSV"
+                >
+                  <ExportIcon /> Export
+                </button>
+                <ColumnSettings layout={layout} />
+              </div>
+            </div>
+            {hasActiveFilters(params) && (
+              <button type="button" className="reset" onClick={reset}>
+                Clear filters <X size={12} />
+              </button>
+            )}
+            <PaymentsTable
+              loading={tableLoading}
+              pageSize={page.size}
+              rows={page.rows}
+              columns={layout.visibleColumns}
+              widths={layout.widths}
+              wrap={layout.wrap}
+              params={params}
+              now={now}
+              onSort={(column) => update((p) => toggleSort(p, column))}
+              onResize={layout.resize}
+              onMove={layout.move}
+              announce={setNotice}
+            />
+            {!tableLoading && !result.length && (
+              <section className="empty">
+                <h2>No payments found</h2>
+                <button type="button" onClick={reset}>
+                  Clear search and filters
+                </button>
+              </section>
+            )}
+            <Pagination
+              total={result.length}
+              start={page.start}
+              end={page.end}
+              page={page.page}
+              pages={page.pages}
+              size={page.size}
+              hidden={loading}
+              onPageChange={(n) =>
+                update((p) => p.set("page", String(n)), false)
+              }
+              onSizeChange={(n) => update((p) => p.set("size", String(n)))}
+            />
+          </>
+        ) : (
           <section className="empty">
-            <h2>No payments found</h2>
-            <button type="button" onClick={reset}>
-              Clear search and filters
-            </button>
+            <h2>No {activeTab.toLowerCase()} in this sandbox</h2>
           </section>
         )}
-        <Pagination
-          total={result.length}
-          start={page.start}
-          end={page.end}
-          page={page.page}
-          pages={page.pages}
-          size={page.size}
-          hidden={loading}
-          onPageChange={(n) => update((p) => p.set("page", String(n)), false)}
-          onSizeChange={(n) => update((p) => p.set("size", String(n)))}
-        />
       </main>
       <AnalyzeDialog
         open={analyzeOpen}
-        payments={result}
+        payments={showPayments ? result : []}
         onClose={() => setAnalyzeOpen(false)}
       />
       <div role="status" className={notice ? "toast" : "sr"}>

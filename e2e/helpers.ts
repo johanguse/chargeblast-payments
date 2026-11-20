@@ -6,7 +6,6 @@ export const rows = (page: Page) =>
     .getByRole("region", { name: "Payments table" })
     .locator("tbody tr[data-selectable]");
 
-/** Waits for the list to finish its simulated request. */
 export async function waitForRows(page: Page) {
   await expect(page.locator(".skeleton-table")).toHaveCount(0);
   await expect(rows(page).first()).toBeVisible();

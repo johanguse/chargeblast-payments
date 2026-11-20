@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import type { PointerEvent } from "react";
 import { type Column, isSortable } from "../../domain/columns";
 
@@ -54,7 +54,7 @@ export function ColumnHeader({
       {sortable ? (
         <button type="button" onClick={() => onSort(column)}>
           {column}
-          {active && (sort.ascending ? <ArrowUp /> : <ArrowDown />)}
+          {active && (sort.ascending ? <ChevronUp /> : <ChevronDown />)}
         </button>
       ) : (
         column

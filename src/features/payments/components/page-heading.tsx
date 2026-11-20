@@ -1,41 +1,55 @@
-import { ChartColumn, Plus } from "lucide-react";
+import Link from "next/link";
+import { AnalyzeIcon, PlusIcon } from "@/components/icons/ui-icons";
 
-const tabs = [
+export const transactionTabs = [
+  "Payments",
   "Payouts",
   "Top-ups",
   "Collected fees",
   "Transfers",
   "All activity",
-];
+] as const;
+export type TransactionTab = (typeof transactionTabs)[number];
 
-export function PageHeading({ onAnalyze }: { onAnalyze: () => void }) {
+export function tabSlug(tab: TransactionTab) {
+  return tab.toLowerCase().replaceAll(" ", "-");
+}
+
+export function PageHeading({
+  activeTab,
+  onAnalyze,
+}: {
+  activeTab: TransactionTab;
+  onAnalyze: () => void;
+}) {
   return (
     <>
       <div className="heading">
         <h1>Transactions</h1>
         <div>
           <button type="button" className="outline create-payment">
-            <Plus /> Create payment
+            <PlusIcon /> Create payment
           </button>
           <button type="button" className="outline" onClick={onAnalyze}>
-            <ChartColumn /> Analyze
+            <AnalyzeIcon /> Analyze
           </button>
         </div>
       </div>
-      {/* Scrolls sideways on small screens, so it must be focusable (axe scrollable-region-focusable). */}
-      {/* biome-ignore lint/a11y/useSemanticElements: a <section> would pick up the page's section styles. */}
-      <div
-        className="tabs"
-        role="region"
-        aria-label="Transaction types"
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: scroll containers must be keyboard-focusable.
-        tabIndex={0}
-      >
-        <strong>Payments</strong>
-        {tabs.map((tab) => (
-          <span key={tab}>{tab}</span>
+      <nav className="tabs" aria-label="Transaction types">
+        {transactionTabs.map((tab) => (
+          <Link
+            key={tab}
+            href={
+              tab === "Payments"
+                ? "/payments"
+                : `/payments?view=${tabSlug(tab)}`
+            }
+            aria-current={tab === activeTab ? "page" : undefined}
+          >
+            {tab}
+          </Link>
         ))}
-      </div>
+      </nav>
     </>
   );
 }

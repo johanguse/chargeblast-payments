@@ -1,7 +1,6 @@
 import { roundFilterAmount } from "./format";
 import { currencies, methods, statuses } from "./payment";
 
-/** Each filter pill edits one group of URL params. */
 export const filterGroups = [
   { label: "Date and time", keys: ["range", "from", "to"] },
   { label: "Amount", keys: ["op", "min", "max"] },
@@ -13,7 +12,6 @@ export const filterGroups = [
 
 export type FilterGroup = (typeof filterGroups)[number];
 
-/** Checkbox options for multi-select groups, keyed by URL param. */
 export const filterChoices: Partial<Record<string, readonly string[]>> = {
   status: statuses,
   method: methods,
@@ -33,23 +31,41 @@ export function clearFilterGroup(group: FilterGroup, params: URLSearchParams) {
   for (const key of group.keys) params.delete(key);
 }
 
-/** Short text shown on an active filter pill, or "" when inactive. */
 export function summarizeFilter(group: FilterGroup, p: URLSearchParams) {
   if (group.label === "Amount") {
-    const min = p.get("min"),
-      max = p.get("max");
-    if (!min && !max) return "";
-    if (p.get("op") === "gt") return `> ${min}`;
-    if (p.get("op") === "lt") return `< ${max}`;
-    if (min === max) return `= ${min}`;
-    return `${min || "0"} – ${max || "∞"}`;
+    const min = p.get("min");
+    const max = p.get("max");
+    const op = p.get("op");
+    if (min && op === "gt") return `${amountOperators.gt} ${min}`;
+    if (max && op === "lt") return `${amountOperators.lt} ${max}`;
+    if (min && min === max) return `${amountOperators.eq} ${min}`;
+    if (min && max) return `${amountOperators.between} ${min} and ${max}`;
+    if (min) return `is at least ${min}`;
+    if (max) return `is at most ${max}`;
+    return "";
   }
-  if (group.label === "Date and time" && p.get("range") === "Custom")
-    return [p.get("from"), p.get("to")].filter(Boolean).join(" – ") || "Custom";
-  return p.getAll(group.keys[0]).join(", ");
+  if (group.label === "Date and time") {
+    const range = p.get("range");
+    if (range === "Today") return "is today";
+    if (range === "7 days" || range === "30 days")
+      return `is in the last ${range}`;
+    if (range !== "Custom") return "";
+    const from = p.get("from");
+    const to = p.get("to");
+    if (from && to) return `is from ${from} to ${to}`;
+    if (from) return `is on or after ${from}`;
+    if (to) return `is on or before ${to}`;
+    return "is a custom range";
+  }
+  if (group.label === "More filters") {
+    const query = p.get("q")?.trim();
+    return query ? `matching “${query}”` : "";
+  }
+  const choices = p.getAll(group.keys[0]).filter(Boolean);
+  if (!choices.length) return "";
+  return `is ${new Intl.ListFormat("en", { type: "disjunction" }).format(choices)}`;
 }
 
-/** Normalizes a filter form into the URL params it should write. */
 export function filterValuesFromForm(fields: FormData) {
   const values = new URLSearchParams();
   for (const [key, raw] of fields) {
@@ -66,7 +82,6 @@ export function filterValuesFromForm(fields: FormData) {
   return values;
 }
 
-/** Returns an error message for an invalid filter form, or null. */
 export function validateFilterForm(group: FilterGroup, fields: FormData) {
   if (group.label === "Amount" && fields.get("op") === "between") {
     const min = fields.get("min"),

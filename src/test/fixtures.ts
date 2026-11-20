@@ -1,7 +1,6 @@
 import { seedPayments } from "@/features/payments/data/seed";
 import type { Payment } from "@/features/payments/domain/payment";
 
-/** A fixed clock so seeded data and relative times are stable. */
 export const NOW = new Date("2026-11-19T14:00:00Z").getTime();
 
 export const payments = seedPayments(NOW);
