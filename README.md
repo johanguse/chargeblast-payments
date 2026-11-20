@@ -17,7 +17,7 @@ Open [the payments list](http://localhost:3000/payments). The root route redirec
 
 ## Using the dashboard
 
-- Search 600 seeded payments by ID, customer email, or last four digits. Sort by amount, status, or date. Use the **Rows per page** dropdown beside **Previous** and **Next** to show 25, 50, or 100 payments.
+- Search 600 seeded payments by ID, customer email, or last four digits. Sort by amount, status, or date. Choose 25, 50, or 100 per page from the dropdown beside **Previous** and **Next**.
 - Filter pills preview edits immediately. Apply commits them to the table and URL. Back discards the draft. Amount filter bounds round to two decimals, so 12.252665 becomes 12.25. Displayed payments use their currency’s precision.
 - The default data columns are Amount (including currency), Status, Payment method, Description, Customer, Date, Refunded date, Decline reason, and Payment ID. Scroll horizontally to reach the shortened ID. Hover or focus it to see the full value, or click it to copy.
 - Open **Edit columns** in the toolbar to adjust the table in place. The panel opens beside its button. Use it to show or hide individual columns, wrap cells, or reset the layout. Drag headers to reorder, drag their edges to resize, or use the keyboard controls under **Column order and widths**. Optional columns without a seeded value display an em dash.

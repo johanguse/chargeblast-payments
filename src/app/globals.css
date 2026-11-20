@@ -469,14 +469,8 @@ input[type="checkbox"]:checked:after {
   font-size: 14px;
   color: var(--muted);
 }
-.pagination label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  white-space: nowrap;
-}
 .pagination select {
+  margin-left: auto;
   min-height: 30px;
   padding: 3px 5px;
   border: 1px solid var(--ring);
@@ -1128,7 +1122,7 @@ tr[data-selectable="true"]:focus-within .row-tools > .quick {
   .pagination .result-range {
     flex-basis: 100%;
   }
-  .pagination label {
+  .pagination select {
     margin-left: 0;
   }
   .pagination nav {

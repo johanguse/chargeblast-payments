@@ -36,19 +36,17 @@ export function Pagination({
           "0 results"
         )}
       </div>
-      <label>
-        Rows per page
-        <select
-          value={size}
-          onChange={(event) => onSizeChange(Number(event.currentTarget.value))}
-        >
-          {pageSizes.map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
-          ))}
-        </select>
-      </label>
+      <select
+        aria-label="Rows per page"
+        value={size}
+        onChange={(event) => onSizeChange(Number(event.currentTarget.value))}
+      >
+        {pageSizes.map((n) => (
+          <option key={n} value={n}>
+            {n}
+          </option>
+        ))}
+      </select>
       <nav aria-label="Pagination">
         <button
           type="button"
