@@ -32,9 +32,7 @@ test("details page returns to the same filtered, sorted page", async ({
   await expect(
     page.getByRole("columnheader", { name: "Amount" }),
   ).toHaveAttribute("aria-sort", "ascending");
-  await expect(
-    page.getByRole("button", { name: /Rows per page/ }),
-  ).toContainText("26–50");
+  await expect(page.locator(".result-range")).toContainText("26–50");
 });
 
 test("a shared link opens the same view", async ({ page }) => {

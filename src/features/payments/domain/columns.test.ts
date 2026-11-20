@@ -39,7 +39,7 @@ describe("clampColumnWidth", () => {
     ["Amount", 10, 75],
     ["Amount", 200, 200],
     ["Amount", 9999, MAX_COLUMN_WIDTH],
-    ["Payment ID", 100, 260],
+    ["Payment ID", 100, 160],
   ] as const)("%s at %i → %i", (column, width, expected) => {
     expect(clampColumnWidth(column, width)).toBe(expected);
   });

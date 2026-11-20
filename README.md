@@ -17,11 +17,11 @@ Open [the payments list](http://localhost:3000/payments). The root route redirec
 
 ## Using the dashboard
 
-- Search 600 seeded payments by ID, customer email, or last four digits. Sort by amount, status, or date. The result-range button changes the page size to 25, 50, or 100.
+- Search 600 seeded payments by ID, customer email, or last four digits. Sort by amount, status, or date. Use the **Rows per page** dropdown beside **Previous** and **Next** to show 25, 50, or 100 payments.
 - Filter pills preview edits immediately. Apply commits them to the table and URL. Back discards the draft. Amount filter bounds round to two decimals, so 12.252665 becomes 12.25. Displayed payments use their currency’s precision.
-- The default data columns are Amount (including currency), Status, Payment method, Description, Customer, Date, Refunded date, Decline reason, and Payment ID. Scroll horizontally to reach the full ID and its clipboard button.
+- The default data columns are Amount (including currency), Status, Payment method, Description, Customer, Date, Refunded date, Decline reason, and Payment ID. Scroll horizontally to reach the shortened ID. Hover or focus it to see the full value, or click it to copy.
 - Open **Edit columns** in the toolbar to adjust the table in place. The panel opens beside its button. Use it to show or hide individual columns, wrap cells, or reset the layout. Drag headers to reorder, drag their edges to resize, or use the keyboard controls under **Column order and widths**. Optional columns without a seeded value display an em dash.
-- **Analyze** summarizes the filtered payments by status. **Export** downloads the filtered results as CSV. Opening a row reveals payment details, events, and metadata. Hovering or focusing the date shows relative time.
+- **Analyze** summarizes the filtered payments by status. **Export** downloads all filtered payments across pages, in the current sort order, with the visible columns in their displayed order. The CSV uses UTF-8 with a byte-order mark for Excel. Dates include the year, local time and UTC offset, and payment IDs are complete. Opening a row reveals payment details, events, and metadata. Hovering or focusing the date shows relative time.
 - Creating payments, issuing refunds, sending receipts, and navigating to other Stripe products are unavailable.
 
 ## Stack

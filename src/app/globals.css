@@ -438,6 +438,7 @@ input[type="checkbox"]:checked:after {
   background: #426458;
 }
 .header-tooltip,
+.id-tooltip,
 .date-tooltip {
   z-index: 50;
   background: white;
@@ -469,10 +470,19 @@ input[type="checkbox"]:checked:after {
   color: var(--muted);
 }
 .pagination label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-left: auto;
+  white-space: nowrap;
 }
 .pagination select {
-  margin-left: 4px;
+  min-height: 30px;
+  padding: 3px 5px;
+  border: 1px solid var(--ring);
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
 }
 .reset {
   margin: 6px 0;
@@ -1114,21 +1124,16 @@ tr[data-selectable="true"]:focus-within .row-tools > .quick {
 .product-group summary:hover {
   background: var(--soft);
 }
-.result-range > button {
-  font-weight: 600;
-  color: var(--ink);
-}
-.result-range > button:hover {
-  text-decoration: underline dotted;
-}
-.result-range .size-option {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 6px;
-}
-.size-option[aria-pressed="true"] {
-  color: var(--accent);
+@media (max-width: 560px) {
+  .pagination .result-range {
+    flex-basis: 100%;
+  }
+  .pagination label {
+    margin-left: 0;
+  }
+  .pagination nav {
+    margin-left: auto;
+  }
 }
 .sidebar-content {
   height: 100%;
@@ -1624,9 +1629,6 @@ tr[data-selectable="true"]:focus-within .row-tools > .quick {
   }
   .pagination {
     gap: 4px 8px;
-  }
-  .pagination nav {
-    margin-left: auto;
   }
   .payment-fields div {
     grid-template-columns: minmax(106px, 32%) minmax(0, 1fr);

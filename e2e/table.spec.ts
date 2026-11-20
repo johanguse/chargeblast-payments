@@ -14,15 +14,41 @@ test("export contains exactly the filtered payments", async ({ page }) => {
     await page.locator(".result-range strong").textContent(),
   );
 
+  await page.getByRole("button", { name: "Amount", exact: true }).click();
+  await waitForRows(page);
+  await page.getByRole("button", { name: "Edit columns" }).click();
+  const settings = page.getByRole("dialog", { name: "Edit columns" });
+  await settings.getByLabel("Description", { exact: true }).uncheck();
+  await settings.getByLabel("Customer name", { exact: true }).check();
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("columnheader", { name: "Customer", exact: true })
+    .dragTo(page.getByRole("columnheader", { name: "Amount" }));
+  const visibleColumns = await page
+    .locator("th[data-column]")
+    .evaluateAll((cells) =>
+      cells.map((cell) => cell.getAttribute("data-column")),
+    );
+  const ids = await rows(page)
+    .locator("button.id")
+    .evaluateAll((buttons) =>
+      buttons.map((button) =>
+        button.getAttribute("aria-label")!.replace("Copy payment ID ", ""),
+      ),
+    );
   const download = page.waitForEvent("download");
   await page
     .getByRole("button", { name: "Export current view as CSV" })
     .click();
-  const csv = await readFile((await (await download).path())!, "utf8");
+  const bytes = await readFile((await (await download).path())!);
+  expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+  const csv = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   const lines = csv.split("\r\n");
 
   expect(lines).toHaveLength(total + 1);
-  expect(lines[0]).toContain('"Refunded date"');
+  expect(lines[0]).toBe(visibleColumns.map((col) => `"${col}"`).join(","));
+  for (const [index, id] of ids.entries())
+    expect(lines[index + 1]).toContain(`"${id}"`);
   expect(lines.slice(1).every((line) => line.includes('"Refunded"'))).toBe(
     true,
   );
