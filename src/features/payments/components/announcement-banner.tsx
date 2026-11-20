@@ -2,11 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { SparkleIcon } from "@/components/icons/ui-icons";
 
-export function AnnouncementBanner({
-  onDismiss,
-}: {
-  onDismiss?: () => void;
-}) {
+export function AnnouncementBanner({ onDismiss }: { onDismiss?: () => void }) {
   const [visible, setVisible] = useState(true);
   if (!visible) return null;
   return (
