@@ -1,6 +1,6 @@
 # Chargeblast Payments
 
-A standalone Next.js and TypeScript recreation of the Stripe Transactions → Payments screen. The visual target is [the original dashboard screenshot](docs/payments-original.png). The [specification](SPEC.md) describes the take-home requirements.
+A standalone Next.js and TypeScript recreation of the Stripe Transactions → Payments screen. The visual target is [the original dashboard screenshot](docs/payments-original.png). The [specification](docs/SPEC.md) describes the take-home requirements.
 
 Live version: [chargeblast-payments.johanguse.workers.dev](https://chargeblast-payments.johanguse.workers.dev/)
 
