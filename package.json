@@ -1,0 +1,47 @@
+{
+  "name": "chargeblast-payments",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "bun run lint && bun run typecheck && bun run test",
+    "build:worker": "opennextjs-cloudflare build",
+    "preview:worker": "wrangler dev --local",
+    "deploy:worker": "opennextjs-cloudflare deploy",
+    "upload:worker": "opennextjs-cloudflare upload"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@radix-ui/react-tooltip": "^1.4.1",
+    "lucide-react": "^1.76.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@biomejs/biome": "^2.6.8",
+    "@opennextjs/cloudflare": "1.20.17",
+    "@playwright/test": "1.65.1",
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.13",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.3.0",
+    "jsdom": "^31.0.1",
+    "typescript": "^5",
+    "vitest": "^5.1.1",
+    "wrangler": "4.165.0"
+  },
+  "type": "module",
+  "packageManager": "bun@1.3.11"
+}
