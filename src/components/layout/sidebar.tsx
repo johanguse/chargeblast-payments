@@ -17,7 +17,6 @@ import {
 } from "@/components/icons/nav-icons";
 import { type WorkspaceProps, WorkspaceSwitcher } from "./workspace-switcher";
 
-/** Static navigation copied from the Stripe dashboard; only Transactions is live. */
 const groups = [
   {
     title: "",

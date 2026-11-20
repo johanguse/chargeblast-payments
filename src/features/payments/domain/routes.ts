@@ -23,7 +23,6 @@ export function paymentDetailsHref(
   );
 }
 
-/** Only accepts a query string, so `back` can't redirect off-site. */
 export const paymentsListHref = (back?: string) =>
   `/payments${back?.startsWith("?") ? back : ""}`;
 
@@ -34,7 +33,6 @@ export function parseSnapshotTime(at: string | undefined) {
     : Date.now();
 }
 
-/** Falls back to UTC when a shared link carries an invalid time zone. */
 export function resolveTimeZone(timeZone: string | undefined) {
   try {
     return new Intl.DateTimeFormat("en-US", {

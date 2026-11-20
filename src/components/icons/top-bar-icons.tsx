@@ -1,9 +1,6 @@
-// Icon artwork adapted from https://github.com/jonathannunesdev/chargeblast-stripe-payments
 import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
-
-/** App tiles and top bar icons, redrawn from the reference at the size they are shown. */
 
 export function AppLogoLd(props: IconProps) {
   return (

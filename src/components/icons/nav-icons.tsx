@@ -1,4 +1,3 @@
-// Icon artwork adapted from https://github.com/jonathannunesdev/chargeblast-stripe-payments
 import type { ReactNode, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;

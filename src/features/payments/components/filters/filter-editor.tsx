@@ -9,7 +9,6 @@ import {
 import { roundFilterAmount } from "../../domain/format";
 import { dateRangePresets } from "../../domain/query";
 
-/** The form inside a filter pill's popover. */
 export function FilterEditor({
   group,
   params,

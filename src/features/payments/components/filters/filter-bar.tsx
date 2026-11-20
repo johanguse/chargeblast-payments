@@ -11,7 +11,6 @@ import {
 import type { UpdateParams } from "../../hooks/use-payments-query";
 import { FilterEditor } from "./filter-editor";
 
-/** One pill per filter group; each opens an editor in a popover. */
 export function FilterBar({
   params,
   update,

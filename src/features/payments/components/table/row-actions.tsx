@@ -7,7 +7,6 @@ const quickActions = [
   { label: "Send receipt", Icon: Mail },
 ] as const;
 
-/** Hover shortcuts plus the "More actions" menu at the end of each row. */
 export function RowActions({
   id,
   href,

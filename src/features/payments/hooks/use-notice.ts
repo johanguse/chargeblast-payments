@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-/** A short-lived status message for the toast region. */
 export function useNotice(durationMs = 2500) {
   const [notice, setNotice] = useState("");
   useEffect(() => {

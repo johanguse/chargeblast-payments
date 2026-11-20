@@ -2,6 +2,11 @@ import type { Payment } from "./payment";
 
 const MINUTE = 60_000;
 
+/**
+ * Formats a payment amount in the specified currency.
+ * @param payment The payment to format.
+ * @returns The formatted amount.
+ */
 export function formatMoney(payment: Pick<Payment, "amount" | "currency">) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -12,7 +17,12 @@ export function formatMoney(payment: Pick<Payment, "amount" | "currency">) {
     .replace(/^R\$(?=\d)/, "R$ ");
 }
 
-/** Long date used on the details page, e.g. "Nov 19, 2026, 2:00 PM". */
+/**
+ * Formats a date and time in the specified time zone.
+ * @param time The time to format.
+ * @param timeZone The time zone to use.
+ * @returns The formatted date and time.
+ */
 export function formatDateTime(time: number, timeZone = "UTC") {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -24,7 +34,11 @@ export function formatDateTime(time: number, timeZone = "UTC") {
   }).format(time);
 }
 
-/** Short date used in table cells, e.g. "Nov 19, 2:00 PM". */
+/**
+ * Creates a date formatter for a more compact display.
+ * @param timeZone The time zone to use.
+ * @returns A date formatter.
+ */
 export function compactDateFormatter(timeZone: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -35,7 +49,12 @@ export function compactDateFormatter(timeZone: string) {
   });
 }
 
-/** "Just now", "5 minutes ago", "3 hours ago", "2 days ago". */
+/**
+ * Formats a relative time, e.g. "Just now", "5 minutes ago", "3 hours ago", "2 days ago".
+ * @param time The time to format.
+ * @param now The current time.
+ * @returns The formatted relative time.
+ */
 export function formatRelativeTime(time: number, now: number) {
   const minutes = Math.max(0, Math.floor((now - time) / MINUTE));
   if (minutes === 0) return "Just now";
@@ -56,7 +75,11 @@ const filterAmountFormat = new Intl.NumberFormat("en-US", {
   useGrouping: false,
 });
 
-/** Rounds a typed amount to two decimals, leaving non-numeric text alone. */
+/**
+ * Rounds a typed amount to two decimals, leaving non-numeric text alone.
+ * @param text The text to round.
+ * @returns The rounded text.
+ */
 export function roundFilterAmount(text: string) {
   return text && Number.isFinite(Number(text))
     ? filterAmountFormat.format(Number(text))

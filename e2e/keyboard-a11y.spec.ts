@@ -111,7 +111,6 @@ test("company switcher opens below its trigger and shares the workspace with the
   await trigger.click();
   const sandbox = panel.getByRole("button", { name: "Switch sandbox" });
   const flyout = page.getByRole("dialog", { name: "Switch sandbox" });
-  // Sample immediately after the opening pointer event, before deferred toggle handlers run.
   const firstPosition = await sandbox.evaluate((row) => {
     row.dispatchEvent(
       new PointerEvent("pointerover", { bubbles: true, pointerType: "mouse" }),

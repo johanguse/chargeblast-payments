@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import { isBackdropClick } from "@/lib/dialog";
 import { type Payment, statuses } from "../domain/payment";
 
-/** Modal with a per-status breakdown of the current result set. */
 export function AnalyzeDialog({
   open,
   payments,

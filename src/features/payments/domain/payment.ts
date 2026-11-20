@@ -33,6 +33,5 @@ export type Payment = {
   description: string;
 };
 
-/** Only settled payments can be selected for bulk actions or refunded. */
 export const isSelectable = (payment: Payment) =>
   payment.status === "Succeeded";

@@ -4,7 +4,6 @@ import { Popover } from "@/components/ui/popover";
 import { MAX_COLUMN_WIDTH, minColumnWidth } from "../domain/columns";
 import type { ColumnLayout } from "../hooks/use-column-layout";
 
-/** "Edit columns" popover: wrapping, visibility, order and widths. */
 export function ColumnSettings({ layout }: { layout: ColumnLayout }) {
   const { order, widths, hidden, wrap } = layout;
   return (

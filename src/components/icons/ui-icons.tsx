@@ -1,9 +1,7 @@
-// Icon artwork adapted from https://github.com/jonathannunesdev/chargeblast-stripe-payments
 import type { ReactNode, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-/** Button and filter icons, redrawn from the reference at the size they are shown. */
 function Outline({
   children,
   viewBox,
@@ -87,7 +85,6 @@ export function ExportIcon() {
   );
 }
 
-/** From the Stripe Dashboard Starter Kit (https://github.com/khoi-stripe/stripe-dash-starter, MIT). */
 export function GearIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" {...props}>

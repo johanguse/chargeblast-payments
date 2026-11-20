@@ -5,7 +5,6 @@ import { SparkleIcon } from "@/components/icons/ui-icons";
 export function AnnouncementBanner({
   onDismiss,
 }: {
-  /** Called after the banner hides, so focus can move somewhere sensible. */
   onDismiss?: () => void;
 }) {
   const [visible, setVisible] = useState(true);

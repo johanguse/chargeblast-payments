@@ -46,7 +46,6 @@ export function WorkspaceSubmenu({
     const el = panel.current;
     if (!el) return;
     el.showPopover();
-    // Measure in the top layer and anchor before the browser can paint.
     position();
     if (focus)
       (el.querySelector<HTMLElement>("button:enabled") ?? el).focus({

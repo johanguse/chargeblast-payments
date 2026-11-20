@@ -10,7 +10,6 @@ const tabs: ("All" | PaymentStatus)[] = [
   "Uncaptured",
 ];
 
-/** Quick status filter. "All" clears it; a tab is pressed only when it is the sole status. */
 export function StatusTabs({
   selected,
   onSelect,

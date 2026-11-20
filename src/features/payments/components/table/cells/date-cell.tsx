@@ -2,7 +2,6 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import Link from "next/link";
 import { formatRelativeTime } from "../../../domain/format";
 
-/** Absolute date that links to the payment, with a relative-time tooltip. */
 export function DateCell({
   time,
   now,

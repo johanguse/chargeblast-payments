@@ -8,7 +8,6 @@ import {
   optionalColumns,
 } from "../domain/columns";
 
-/** Column order, visibility, widths and wrapping for the payments table. */
 export function useColumnLayout() {
   const [order, setOrder] = useState<Column[]>(availableColumns);
   const [widths, setWidths] = useState(defaultWidths);
