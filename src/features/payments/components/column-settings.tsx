@@ -1,4 +1,5 @@
-import { Settings, X } from "lucide-react";
+import { X } from "lucide-react";
+import { GearIcon } from "@/components/icons/ui-icons";
 import { Popover } from "@/components/ui/popover";
 import { MAX_COLUMN_WIDTH, minColumnWidth } from "../domain/columns";
 import type { ColumnLayout } from "../hooks/use-column-layout";
@@ -11,7 +12,7 @@ export function ColumnSettings({ layout }: { layout: ColumnLayout }) {
       label="Edit columns"
       trigger={
         <>
-          <Settings /> Edit columns
+          <GearIcon /> Edit columns
         </>
       }
       triggerClassName="outline"

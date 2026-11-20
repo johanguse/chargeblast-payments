@@ -15,12 +15,12 @@ describe("summarizeFilter", () => {
   const amount = group("Amount");
   it.each([
     ["", ""],
-    ["op=eq&min=5&max=5", "= 5"],
-    ["op=between&min=5&max=10", "5 – 10"],
-    ["op=between&min=5", "5 – ∞"],
-    ["op=between&max=10", "0 – 10"],
-    ["op=gt&min=5", "> 5"],
-    ["op=lt&max=10", "< 10"],
+    ["op=eq&min=5&max=5", "is equal to 5"],
+    ["op=between&min=5&max=10", "is between 5 and 10"],
+    ["op=between&min=5", "is at least 5"],
+    ["op=between&max=10", "is at most 10"],
+    ["op=gt&min=5", "is greater than 5"],
+    ["op=lt&max=10", "is less than 10"],
   ])("amount %s → %s", (search, expected) => {
     expect(summarizeFilter(amount, params(search))).toBe(expected);
   });
@@ -32,15 +32,38 @@ describe("summarizeFilter", () => {
         date,
         params("range=Custom&from=2026-01-01&to=2026-01-31"),
       ),
-    ).toBe("2026-01-01 – 2026-01-31");
-    expect(summarizeFilter(date, params("range=Custom"))).toBe("Custom");
-    expect(summarizeFilter(date, params("range=7+days"))).toBe("7 days");
+    ).toBe("is from 2026-01-01 to 2026-01-31");
+    expect(summarizeFilter(date, params("range=Custom"))).toBe(
+      "is a custom range",
+    );
+    expect(summarizeFilter(date, params("range=7+days"))).toBe(
+      "is in the last 7 days",
+    );
+  });
+
+  it.each([
+    ["Date and time", "range=Today", "is today"],
+    [
+      "Date and time",
+      "range=Custom&to=2026-01-31",
+      "is on or before 2026-01-31",
+    ],
+    [
+      "Date and time",
+      "range=Custom&from=2026-01-01",
+      "is on or after 2026-01-01",
+    ],
+    ["Payment method", "method=Card&method=Wallet", "is Card or Wallet"],
+    ["Currency", "currency=USD", "is USD"],
+    ["More filters", "q=4242", "matching “4242”"],
+  ])("%s describes %s", (label, search, expected) => {
+    expect(summarizeFilter(group(label), params(search))).toBe(expected);
   });
 
   it("joins multi-select values", () => {
     expect(
       summarizeFilter(group("Status"), params("status=Failed&status=Pending")),
-    ).toBe("Failed, Pending");
+    ).toBe("is Failed or Pending");
   });
 });
 

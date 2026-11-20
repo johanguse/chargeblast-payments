@@ -1,19 +1,20 @@
-import {
-  Box,
-  ChartColumn,
-  ChevronDown,
-  Clock3,
-  CreditCard,
-  Ellipsis,
-  House,
-  Layers2,
-  ListFilter,
-  Pin,
-  Repeat2,
-  UserRound,
-  Wallet,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import {
+  BalancesIcon,
+  BillingIcon,
+  ClockIcon,
+  ConnectIcon,
+  CustomersIcon,
+  DevelopersIcon,
+  HomeIcon,
+  MoreIcon,
+  PinIcon,
+  ProductCatalogIcon,
+  ReportingIcon,
+  TransactionsIcon,
+  WalletIcon,
+} from "@/components/icons/nav-icons";
 import { type WorkspaceProps, WorkspaceSwitcher } from "./workspace-switcher";
 
 /** Static navigation copied from the Stripe dashboard; only Transactions is live. */
@@ -21,27 +22,27 @@ const groups = [
   {
     title: "",
     items: [
-      ["Home", House],
-      ["Balances", ListFilter],
-      ["Transactions", Repeat2],
-      ["Customers", UserRound],
-      ["Product catalog", Box],
+      ["Home", HomeIcon],
+      ["Balances", BalancesIcon],
+      ["Transactions", TransactionsIcon],
+      ["Customers", CustomersIcon],
+      ["Product catalog", ProductCatalogIcon],
     ],
   },
   {
     title: "Shortcuts",
     items: ["Payments analytics", "Reports", "Sigma", "Radar"].map(
-      (s) => [s, s === "Payments analytics" ? Pin : Clock3] as const,
+      (s) => [s, s === "Payments analytics" ? PinIcon : ClockIcon] as const,
     ),
   },
   {
     title: "Products",
     items: [
-      ["Connect", Layers2],
-      ["Payments", Wallet],
-      ["Billing", CreditCard],
-      ["Reporting", ChartColumn],
-      ["More", Ellipsis],
+      ["Connect", ConnectIcon],
+      ["Payments", WalletIcon],
+      ["Billing", BillingIcon],
+      ["Reporting", ReportingIcon],
+      ["More", MoreIcon],
     ],
   },
 ] as const;
@@ -73,15 +74,15 @@ export function Sidebar({
                   aria-current="location"
                   className="navrow active"
                 >
-                  <Icon size={16} />
+                  <Icon />
                   {label}
                 </Link>
               ) : g.title === "Products" ? (
                 <details key={label} className="product-group">
                   <summary className="navrow">
-                    <Icon size={16} />
+                    <Icon />
                     {label}
-                    <ChevronDown size={12} />
+                    <ChevronDown width={12} height={12} />
                   </summary>
                   <ul>
                     {childrenByProduct[label].map((item) => (
@@ -101,7 +102,7 @@ export function Sidebar({
                 </details>
               ) : (
                 <button type="button" key={label} className="navrow">
-                  <Icon size={16} />
+                  <Icon />
                   {label}
                 </button>
               ),
@@ -110,20 +111,7 @@ export function Sidebar({
         ))}
       </nav>
       <button type="button" className="navrow developers">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 18 18"
-          width="17"
-          height="17"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="1.5" y="3" width="15" height="12" rx="2.5" />
-          <path d="m4.7 6.2 3 2.8-3 2.8M9.6 11.8h3.2" />
-        </svg>
+        <DevelopersIcon />
         Developers
       </button>
     </div>

@@ -197,7 +197,7 @@ test("amount popover applies a range and Back discards edits", async ({
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Filter by amount" });
   await dialog.getByLabel("Filter value").fill("5.25");
-  await expect(trigger).toContainText("= 5.25");
+  await expect(trigger).toContainText("is equal to 5.25");
   await dialog.getByRole("button", { name: "Back" }).click();
   await expect(trigger).toBeFocused();
   await expect(trigger).not.toContainText("5.25");
@@ -207,7 +207,7 @@ test("amount popover applies a range and Back discards edits", async ({
   await dialog.getByLabel("Number filter select").selectOption("between");
   await dialog.getByLabel("Minimum").fill("9.88");
   await dialog.getByLabel("Maximum").fill("21.98");
-  await expect(trigger).toContainText("9.88 – 21.98");
+  await expect(trigger).toContainText("is between 9.88 and 21.98");
   await dialog.getByRole("button", { name: "Apply" }).click();
   await expect(page).toHaveURL(/min=9.88/);
   await expect(page).toHaveURL(/max=21.98/);

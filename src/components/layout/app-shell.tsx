@@ -1,5 +1,5 @@
 "use client";
-import { LayoutGrid } from "lucide-react";
+import { Menu } from "lucide-react";
 import { type ReactNode, useRef, useState } from "react";
 import { isBackdropClick } from "@/lib/dialog";
 import { Sidebar } from "./sidebar";
@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label="Open workspace menu"
         onClick={() => drawer.current?.showModal()}
       >
-        <LayoutGrid />
+        <Menu />
       </button>
       {children}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click is a mouse shortcut; Escape closes the dialog natively. */}

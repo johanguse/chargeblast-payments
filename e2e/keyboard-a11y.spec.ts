@@ -109,7 +109,41 @@ test("company switcher opens below its trigger and shares the workspace with the
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
   await trigger.click();
-  await panel.getByText("Other accounts").click();
+  const sandbox = panel.getByRole("button", { name: "Switch sandbox" });
+  const flyout = page.getByRole("dialog", { name: "Switch sandbox" });
+  // Sample immediately after the opening pointer event, before deferred toggle handlers run.
+  const firstPosition = await sandbox.evaluate((row) => {
+    row.dispatchEvent(
+      new PointerEvent("pointerover", { bubbles: true, pointerType: "mouse" }),
+    );
+    const submenu = document.getElementById(row.getAttribute("aria-controls")!);
+    const bounds = submenu?.getBoundingClientRect();
+    const anchor = row.getBoundingClientRect();
+    return {
+      open: submenu?.matches(":popover-open"),
+      rightGap: (bounds?.left ?? 0) - anchor.right,
+      topOffset: (bounds?.top ?? 0) - anchor.top,
+    };
+  });
+  expect(firstPosition.open).toBe(true);
+  expect(firstPosition.rightGap).toBeCloseTo(4, 0);
+  expect(firstPosition.topOffset).toBeCloseTo(0, 0);
+  await sandbox.hover();
+  await expect(flyout).toBeVisible();
+  const rowBounds = await sandbox.boundingBox();
+  const flyoutBounds = await flyout.boundingBox();
+  expect(flyoutBounds?.x).toBeCloseTo(
+    (rowBounds?.x ?? 0) + (rowBounds?.width ?? 0) + 4,
+    0,
+  );
+  expect(flyoutBounds?.y).toBeCloseTo(rowBounds?.y ?? 0, 0);
+  expect((await panel.boundingBox())?.height).toEqual(bounds?.height);
+  await sandbox.press("ArrowRight");
+  await expect(flyout.getByRole("button", { name: "Test mode" })).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(flyout).toBeHidden();
+  await expect(sandbox).toBeFocused();
+  await panel.getByRole("button", { name: "Other accounts" }).click();
   await panel.getByRole("button", { name: "cramly.ai", exact: true }).click();
   await expect(panel).toBeHidden();
   await page.setViewportSize({ width: 390, height: 844 });

@@ -1,16 +1,17 @@
 import {
   Check,
   ChevronDown,
-  ChevronRight,
   LogOut,
   Package,
   Plus,
   Settings,
+  Spline,
   SquareUserRound,
   Store,
   UserRound,
 } from "lucide-react";
 import { Popover } from "@/components/ui/popover";
+import { WorkspaceSubmenu } from "./workspace-submenu";
 
 const companies = ["cramly.ai", "SpeedSEO"] as const;
 export type Workspace = {
@@ -90,51 +91,53 @@ export function WorkspaceSwitcher({ workspace, onSwitch }: WorkspaceProps) {
                 <Settings />
                 Settings
               </button>
-              <details>
-                <summary>
-                  <Package />
-                  Switch sandbox
-                  <ChevronRight />
-                </summary>
-                <button
-                  type="button"
-                  onClick={() => select({ company, sandbox: true })}
-                >
-                  {company} sandbox{sandbox && <Check />}
-                </button>
-              </details>
+              <WorkspaceSubmenu label="Switch sandbox" icon={Package}>
+                <div className="workspace-group">
+                  <button
+                    type="button"
+                    onClick={() => select({ company, sandbox: true })}
+                  >
+                    <Spline className="test-mode-icon" />
+                    Test mode
+                  </button>
+                  <button type="button" disabled>
+                    <Plus />
+                    Create sandbox
+                  </button>
+                </div>
+                <div className="workspace-group">
+                  <button type="button" disabled>
+                    <Package />
+                    Manage sandboxes
+                  </button>
+                </div>
+              </WorkspaceSubmenu>
             </div>
             <div className="workspace-group">
-              <details>
-                <summary>
-                  <Store />
-                  Other accounts
-                  <ChevronRight />
-                </summary>
-                {companies.map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    onClick={() => select({ company: name, sandbox: true })}
-                  >
-                    {name}
-                    {company === name && <Check />}
+              <WorkspaceSubmenu label="Other accounts" icon={Store}>
+                <div className="workspace-group">
+                  {companies.map((name) => (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => select({ company: name, sandbox: true })}
+                    >
+                      {name}
+                      {company === name && <Check />}
+                    </button>
+                  ))}
+                </div>
+              </WorkspaceSubmenu>
+              <WorkspaceSubmenu label="Create" icon={Plus}>
+                <div className="workspace-group">
+                  <button type="button" disabled>
+                    Create account
                   </button>
-                ))}
-              </details>
-              <details>
-                <summary>
-                  <Plus />
-                  Create
-                  <ChevronRight />
-                </summary>
-                <button type="button" disabled>
-                  Create account
-                </button>
-                <button type="button" disabled>
-                  Create sandbox
-                </button>
-              </details>
+                  <button type="button" disabled>
+                    Create sandbox
+                  </button>
+                </div>
+              </WorkspaceSubmenu>
             </div>
             <div className="workspace-group">
               <button type="button" disabled>
